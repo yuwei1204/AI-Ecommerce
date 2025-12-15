@@ -1,0 +1,13 @@
+# Core dependencies
+fastapi>=0.100.0
+uvicorn>=0.22.0
+pandas>=2.0.1
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+
+# Machine Learning and NLP
+transformers>=4.30.0
+# torch will be installed by setup script to handle CPU/GPU logic, 
+# but we keep a generic requirement here for reference without version conflict
+torch>=2.2.0
+sentence-transformers>=2.2.2
