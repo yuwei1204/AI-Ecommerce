@@ -111,12 +111,12 @@ class ECommerceRAG:
         customer_orders = self.order_df[self.order_df['Customer_Id'] == customer_id]
         return customer_orders.sort_values('Order_DateTime', ascending=False).to_dict('records')
     
-    def get_high_priority_orders(self) -> List[Dict[str, Any]]:
+    def get_high_priority_orders(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get high priority orders"""
         high_priority = self.order_df[
             self.order_df['Order_Priority'].str.lower() == 'high'
         ]
-        return high_priority.sort_values('Order_DateTime', ascending=False).head(5).to_dict('records')
+        return high_priority.sort_values('Order_DateTime', ascending=False).head(limit).to_dict('records')
     
     def format_single_order(self, order: Dict[str, Any]) -> str:
         """Format single order details with HTML"""
@@ -153,7 +153,7 @@ class ECommerceRAG:
                    .replace('"', '&quot;')
                    .replace("'", '&#39;'))
         
-        response = "<p><strong>Here are the 5 most recent high-priority orders:</strong></p><ul>"
+        response = f"<p><strong>Here are the {len(orders)} most recent high-priority orders:</strong></p><ul>"
         for i, order in enumerate(orders, 1):
             order_date = pd.Timestamp(order['Order_DateTime']).strftime('%Y-%m-%d %H:%M:%S')
             product = escape_html(order['Product'])
@@ -313,7 +313,19 @@ class ECommerceRAG:
         
         # Handle high priority orders query
         if 'high priority' in query_lower or ('recent' in query_lower and 'priority' in query_lower):
-            orders = self.get_high_priority_orders()
+            # Extract limit from query (e.g., "fetch 20", "top 20", "20 most recent")
+            limit = 10  # default
+            limit_match = re.search(r'\b(\d+)\s*(?:most|recent|high|priority|orders?|top)?', query_lower)
+            if limit_match:
+                try:
+                    extracted_limit = int(limit_match.group(1))
+                    # Reasonable bounds check
+                    if 1 <= extracted_limit <= 100:
+                        limit = extracted_limit
+                except ValueError:
+                    pass
+            
+            orders = self.get_high_priority_orders(limit)
             return self.format_high_priority_orders(orders)
         
         # Handle regular order queries

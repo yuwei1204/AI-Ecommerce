@@ -100,13 +100,16 @@ ecommerce-rag-chatbot/
 - **產品搜尋**: `GET /products/search`
 - **訂單查詢**: `GET /orders/customer/{customer_id}`
 
-### 聊天指令範例 (CLI 模式)
-若使用 `python scripts/run.py chat` 進行測試：
-- 設定客戶 ID: `set customer 37077`
-- 詢問產品: `What are the top 5 highly-rated guitar products?`
-- 詢問產品: `Show me microphones under $200`
+### 聊天指令範例
+- 詢問產品: 
+   - `Show me microphones under $200`
+   - `Show me mic under $200`  (microphone 與 mic 是同義詞，向量相近)
+- 詢問高優先級訂單: 
+   - `Fetch 10 most recent high-priority orders`
+   - `Show me 15 high priority orders`
+   - `Top 5 recent priority orders`
 - 詢問訂單: `What are the details of my last order?`
-- 詢問高優先級訂單: `Fetch 5 most recent high-priority orders`
+- 詢問產品: `What are the top 5 highly-rated guitar products?`
 
 
 ## 測試
